@@ -4,6 +4,10 @@ import pickle
 import numpy as np
 import pandas as pd
 from flask import Flask, render_template, request
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 app = Flask(__name__)
 
@@ -27,7 +31,7 @@ if os.path.exists(MODEL_PATH):
 DB_HOST = os.environ.get("DB_HOST", "127.0.0.1")
 DB_PORT = int(os.environ.get("DB_PORT", 3306))
 DB_USER = os.environ.get("DB_USER", "root")
-DB_PASSWORD = os.environ.get("DB_PASSWORD", "Kaladhar*011")
+DB_PASSWORD = os.environ.get("DB_PASSWORD")
 DB_NAME = os.environ.get("DB_NAME", "smart_lender")
 
 # Helper function to get database connection
