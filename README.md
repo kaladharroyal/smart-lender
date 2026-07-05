@@ -1,5 +1,6 @@
 # 🏦 Smart Lender: Machine Learning Loan Approval Prediction System
 
+[![Live Demo](https://img.shields.io/badge/Render-Live%20Demo-brightgreen?style=flat-square&logo=render&logoColor=white)](https://smart-lender-dple.onrender.com)
 [![Python Version](https://img.shields.io/badge/Python-3.8%2B-blue?logo=python&logoColor=white)](https://www.python.org/)
 [![Flask Web Framework](https://img.shields.io/badge/Framework-Flask-lightgrey?logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
 [![Database](https://img.shields.io/badge/Database-MySQL-blue?logo=mysql&logoColor=white)](https://www.mysql.com/)
@@ -8,6 +9,8 @@
 [![Imbalance Library](https://img.shields.io/badge/Sampling-SMOTE-blueviolet)](https://github.com/scikit-learn-contrib/imbalanced-learn)
 
 Smart Lender is an end-to-end Machine Learning web application designed to predict loan approval decisions. The platform leverages a state-of-the-art **XGBoost Classifier** model to assess loan applications based on applicant demographic details, credit history, and financial indicators.
+
+🌐 **Live Application URL:** [https://smart-lender-dple.onrender.com](https://smart-lender-dple.onrender.com)
 
 The application features a modern Flask web interface, a robust and normalized MySQL database backend matching 3NF design principles, and an automated data preprocessing pipeline.
 
