@@ -7,3 +7,4 @@ imbalanced-learn
 flask
 python-dotenv
 mysql-connector-python
+gunicorn
