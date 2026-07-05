@@ -28,11 +28,11 @@ if os.path.exists(MODEL_PATH):
         model = pickle.load(f)
 
 # Load database configuration from environment variables with local defaults
-DB_HOST = os.environ.get("DB_HOST", "127.0.0.1")
-DB_PORT = int(os.environ.get("DB_PORT", 3306))
-DB_USER = os.environ.get("DB_USER", "root")
-DB_PASSWORD = os.environ.get("DB_PASSWORD")
-DB_NAME = os.environ.get("DB_NAME", "smart_lender")
+DB_HOST = os.environ.get("MYSQL_ADDON_HOST") or os.environ.get("DB_HOST", "127.0.0.1")
+DB_PORT = int(os.environ.get("MYSQL_ADDON_PORT") or os.environ.get("DB_PORT", 3306))
+DB_USER = os.environ.get("MYSQL_ADDON_USER") or os.environ.get("DB_USER", "root")
+DB_PASSWORD = os.environ.get("MYSQL_ADDON_PASSWORD") or os.environ.get("DB_PASSWORD")
+DB_NAME = os.environ.get("MYSQL_ADDON_DB") or os.environ.get("DB_NAME", "smart_lender")
 
 # Helper function to get database connection
 def get_db_connection():
