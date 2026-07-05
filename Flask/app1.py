@@ -46,23 +46,49 @@ def get_db_connection():
 
 # Initialize database matching smart_lender_erd.png
 def init_db():
-    # Connect to MySQL server first without selecting a database
-    conn = mysql.connector.connect(
-        host=DB_HOST,
-        port=DB_PORT,
-        user=DB_USER,
-        password=DB_PASSWORD
-    )
+    try:
+        # Try connecting directly to the target database (needed for cloud platforms like Clever Cloud)
+        conn = mysql.connector.connect(
+            host=DB_HOST,
+            port=DB_PORT,
+            user=DB_USER,
+            password=DB_PASSWORD,
+            database=DB_NAME
+        )
+    except mysql.connector.Error as err:
+        # If the database does not exist (Error 1049), attempt to create it (for local environments)
+        if err.errno == 1049:
+            print(f"Database '{DB_NAME}' not found. Attempting to create it locally...")
+            try:
+                conn_admin = mysql.connector.connect(
+                    host=DB_HOST,
+                    port=DB_PORT,
+                    user=DB_USER,
+                    password=DB_PASSWORD
+                )
+                cursor_admin = conn_admin.cursor()
+                cursor_admin.execute(f"CREATE DATABASE IF NOT EXISTS {DB_NAME}")
+                cursor_admin.close()
+                conn_admin.close()
+                
+                # Re-connect to the newly created database
+                conn = mysql.connector.connect(
+                    host=DB_HOST,
+                    port=DB_PORT,
+                    user=DB_USER,
+                    password=DB_PASSWORD,
+                    database=DB_NAME
+                )
+            except Exception as create_err:
+                raise Exception(f"Failed to create database '{DB_NAME}': {create_err}") from err
+        else:
+            raise err
 
     cursor = conn.cursor()
     try:
-        # Create database if not exists
-        cursor.execute(f"CREATE DATABASE IF NOT EXISTS {DB_NAME}")
-        cursor.execute(f"USE {DB_NAME}")
-
-        # 1. USER table
+        # 1. USER table (backticked)
         cursor.execute('''
-            CREATE TABLE IF NOT EXISTS USER (
+            CREATE TABLE IF NOT EXISTS `USER` (
                 user_id INT AUTO_INCREMENT PRIMARY KEY,
                 name VARCHAR(255) NOT NULL,
                 email VARCHAR(255) NOT NULL,
@@ -109,9 +135,9 @@ def init_db():
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
         ''')
 
-        # 5. MODEL table
+        # 5. MODEL table (backticked)
         cursor.execute('''
-            CREATE TABLE IF NOT EXISTS MODEL (
+            CREATE TABLE IF NOT EXISTS `MODEL` (
                 model_id INT AUTO_INCREMENT PRIMARY KEY,
                 model_name VARCHAR(100) NOT NULL,
                 algorithm VARCHAR(100) NOT NULL,
@@ -121,7 +147,7 @@ def init_db():
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
         ''')
 
-        # 6. PREDICTION_RESULT table
+        # 6. PREDICTION_RESULT table (referencing backticked `MODEL`)
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS PREDICTION_RESULT (
                 prediction_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -131,23 +157,23 @@ def init_db():
                 probability_score DOUBLE NOT NULL,
                 prediction_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (loan_id) REFERENCES LOAN_APPLICATION(loan_id) ON DELETE CASCADE,
-                FOREIGN KEY (model_id) REFERENCES MODEL(model_id) ON DELETE CASCADE
+                FOREIGN KEY (model_id) REFERENCES `MODEL`(model_id) ON DELETE CASCADE
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
         ''')
 
         # Insert default model if not exists or update it to match XGBoost
-        cursor.execute("SELECT COUNT(*) FROM MODEL WHERE model_id = 1")
+        cursor.execute("SELECT COUNT(*) FROM `MODEL` WHERE model_id = 1")
         row = cursor.fetchone()
         if row:
             count = row.get('COUNT(*)') if isinstance(row, dict) else row[0]
             if count == 0:
                 cursor.execute('''
-                    INSERT INTO MODEL (model_id, model_name, algorithm, training_accuracy, testing_accuracy, file_path)
+                    INSERT INTO `MODEL` (model_id, model_name, algorithm, training_accuracy, testing_accuracy, file_path)
                     VALUES (1, 'XGBoost', 'XGBClassifier', 1.0000, 0.8494, 'scale1.pkl & rdf.pkl')
                 ''')
             else:
                 cursor.execute('''
-                    UPDATE MODEL 
+                    UPDATE `MODEL` 
                     SET model_name = 'XGBoost', algorithm = 'XGBClassifier', training_accuracy = 1.0000, testing_accuracy = 0.8494
                     WHERE model_id = 1
                 ''')
