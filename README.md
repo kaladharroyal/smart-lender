@@ -1,5 +1,6 @@
 # 🏦 Smart Lender: Machine Learning Loan Approval Prediction System
 
+[![Live Demo](https://img.shields.io/badge/Render-Live%20Demo-brightgreen?style=flat-square&logo=render&logoColor=white)](https://smart-lender-dple.onrender.com)
 [![Python Version](https://img.shields.io/badge/Python-3.8%2B-blue?logo=python&logoColor=white)](https://www.python.org/)
 [![Flask Web Framework](https://img.shields.io/badge/Framework-Flask-lightgrey?logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
 [![Database](https://img.shields.io/badge/Database-MySQL-blue?logo=mysql&logoColor=white)](https://www.mysql.com/)
@@ -8,6 +9,8 @@
 [![Imbalance Library](https://img.shields.io/badge/Sampling-SMOTE-blueviolet)](https://github.com/scikit-learn-contrib/imbalanced-learn)
 
 Smart Lender is an end-to-end Machine Learning web application designed to predict loan approval decisions. The platform leverages a state-of-the-art **XGBoost Classifier** model to assess loan applications based on applicant demographic details, credit history, and financial indicators.
+
+🌐 **Live Application URL:** [https://smart-lender-dple.onrender.com](https://smart-lender-dple.onrender.com)
 
 The application features a modern Flask web interface, a robust and normalized MySQL database backend matching 3NF design principles, and an automated data preprocessing pipeline.
 
@@ -227,6 +230,7 @@ The application will run locally and become available at `http://127.0.0.1:5000/
 │   └── visualization.ipynb              # Exploratory Data Analysis & Plots
 ├── requirements.txt                     # Project dependencies list
 ├── .env.example                         # Environment configuration template
+├── locustfile.py                        # Locust load and performance testing script
 └── README.md                            # Main project documentation (this file)
 ```
 
@@ -237,3 +241,23 @@ The user interface templates utilize standard design aesthetics with a premium l
 *   **Vibrant Color Palette:** Deep backgrounds paired with clean accent labels (green for approved, red for rejected).
 *   **Interactive Components:** Form validations and responsive layout elements.
 *   **Comprehensive Logging:** Visual indicators displaying probability percentages (e.g. `84.9% Approved`).
+
+---
+
+## ⚡ Performance & Load Testing
+
+Smart Lender includes a performance testing configuration using **Locust** to measure system response times, throughput (Requests Per Second), and concurrency metrics under load.
+
+### Running a Performance Test
+1. Make sure your virtual environment is active, then install Locust:
+   ```powershell
+   pip install locust
+   ```
+2. Start the performance test suite using the [locustfile.py](file:///c:/Users/dvndr/Downloads/skill%20wallet%20project%20docs/locustfile.py) script:
+   ```powershell
+   locust -f locustfile.py
+   ```
+3. Open your browser and navigate to the web control interface at `http://localhost:8089`.
+4. Enter the target host URL (either local development `http://127.0.0.1:5000` or the live Render app `https://smart-lender-dple.onrender.com`), specify the number of concurrent users and spawn rate, and click **Start Swarming**.
+5. You can download CSV reports, review response-time percentiles, and capture real-time graph screenshots (Total Requests per Second, Response Times, Number of Users) to include in your reports.
+
