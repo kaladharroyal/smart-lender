@@ -123,7 +123,7 @@ def init_db():
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
     ''')
     
-    # Insert default model if not exists
+    # Insert default model if not exists or update it to match XGBoost
     cursor.execute("SELECT COUNT(*) FROM MODEL WHERE model_id = 1")
     row = cursor.fetchone()
     if row:
@@ -131,7 +131,13 @@ def init_db():
         if count == 0:
             cursor.execute('''
                 INSERT INTO MODEL (model_id, model_name, algorithm, training_accuracy, testing_accuracy, file_path)
-                VALUES (1, 'Random Forest', 'RandomForestClassifier', 0.8402, 0.8402, 'scale1.pkl & rdf.pkl')
+                VALUES (1, 'XGBoost', 'XGBClassifier', 1.0000, 0.8494, 'scale1.pkl & rdf.pkl')
+            ''')
+        else:
+            cursor.execute('''
+                UPDATE MODEL 
+                SET model_name = 'XGBoost', algorithm = 'XGBClassifier', training_accuracy = 1.0000, testing_accuracy = 0.8494
+                WHERE model_id = 1
             ''')
         
     conn.commit()

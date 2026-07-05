@@ -69,5 +69,9 @@ CREATE TABLE IF NOT EXISTS PREDICTION_RESULT (
 
 -- Insert default model info on creation
 INSERT INTO MODEL (model_id, model_name, algorithm, training_accuracy, testing_accuracy, file_path)
-VALUES (1, 'Random Forest', 'RandomForestClassifier', 0.8402, 0.8402, 'scale1.pkl & rdf.pkl')
-ON DUPLICATE KEY UPDATE model_name = VALUES(model_name);
+VALUES (1, 'XGBoost', 'XGBClassifier', 1.0000, 0.8494, 'scale1.pkl & rdf.pkl')
+ON DUPLICATE KEY UPDATE 
+    model_name = VALUES(model_name),
+    algorithm = VALUES(algorithm),
+    training_accuracy = VALUES(training_accuracy),
+    testing_accuracy = VALUES(testing_accuracy);
