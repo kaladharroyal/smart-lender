@@ -179,6 +179,10 @@ def index():
         
     return render_template('index.html', history=history)
 
+@app.route('/submit')
+def submit():
+    return render_template('submit.html')
+
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
@@ -284,7 +288,7 @@ def predict():
         conn.close()
 
         # Render result page
-        return render_template('result.html', 
+        return render_template('predict.html', 
                                status=status,
                                probability=f"{probability * 100:.1f}%",
                                applicant={
