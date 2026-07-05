@@ -253,21 +253,21 @@
                     {% for item in history %}
                         <div class="history-item">
                             <div class="history-header">
-                                <span class="history-id">Application #{{ item[0] }}</span>
-                                <span class="history-status {% if item[12] == 'Approved' %}status-approved{% else %}status-rejected{% endif %}">
-                                    {{ item[12] }}
+                                <span class="history-id">Application #{{ item.loan_id }}</span>
+                                <span class="history-status {% if item.prediction_status == 'Approved' %}status-approved{% else %}status-rejected{% endif %}">
+                                    {{ item.prediction_status }}
                                 </span>
                             </div>
                             <div class="history-details">
-                                <div>Income: <span class="history-detail-val">${{ item[6] }}</span></div>
-                                <div>Co-Income: <span class="history-detail-val">${{ item[7] }}</span></div>
-                                <div>Amount: <span class="history-detail-val">${{ item[8] }}K</span></div>
-                                <div>Credit: <span class="history-detail-val">{{ item[10] }}</span></div>
-                                <div>Property: <span class="history-detail-val">{{ item[11] }}</span></div>
-                                <div>Term: <span class="history-detail-val">{{ item[9] }} M</span></div>
-                                <div>Conf: <span class="history-detail-val">{{ item[14] }}%</span></div>
+                                <div>Income: <span class="history-detail-val">${{ item.income }}</span></div>
+                                <div>Co-Income: <span class="history-detail-val">${{ item.coapplicant_income }}</span></div>
+                                <div>Amount: <span class="history-detail-val">${{ item.loan_amount }}K</span></div>
+                                <div>Credit: <span class="history-detail-val">{{ item.credit_history }}</span></div>
+                                <div>Property: <span class="history-detail-val">{{ item.property_area }}</span></div>
+                                <div>Term: <span class="history-detail-val">{{ item.loan_term }} M</span></div>
+                                <div>Conf: <span class="history-detail-val">{{ item.probability_score }}%</span></div>
                             </div>
-                            <div class="history-time">{{ item[13] }}</div>
+                            <div class="history-time">{{ item.prediction_time }}</div>
                         </div>
                     {% endfor %}
                 {% else %}
