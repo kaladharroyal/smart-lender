@@ -1,14 +1,16 @@
 -- MySQL Database Schema for Smart Lender
 -- Matches smart_lender_erd.png
-
-CREATE DATABASE IF NOT EXISTS smart_lender;
-USE smart_lender;
+-- NOTE: Run this script against the 'smart_lender' database.
+--       Create the database first via MySQL CLI:
+--         CREATE DATABASE IF NOT EXISTS smart_lender;
+--         USE smart_lender;
 
 -- 1. USER TABLE
-CREATE TABLE IF NOT EXISTS USER (
+-- NOTE: `USER` is a reserved keyword in MySQL; backtick-quoting is required
+CREATE TABLE IF NOT EXISTS `USER` (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
     role VARCHAR(100) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -46,7 +48,8 @@ CREATE TABLE IF NOT EXISTS LOAN_APPLICATION (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 5. MODEL TABLE
-CREATE TABLE IF NOT EXISTS MODEL (
+-- NOTE: `MODEL` is a reserved keyword in MySQL 8+; backtick-quoting is required
+CREATE TABLE IF NOT EXISTS `MODEL` (
     model_id INT AUTO_INCREMENT PRIMARY KEY,
     model_name VARCHAR(100) NOT NULL,
     algorithm VARCHAR(100) NOT NULL,
@@ -64,14 +67,16 @@ CREATE TABLE IF NOT EXISTS PREDICTION_RESULT (
     probability_score DOUBLE NOT NULL,
     prediction_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (loan_id) REFERENCES LOAN_APPLICATION(loan_id) ON DELETE CASCADE,
-    FOREIGN KEY (model_id) REFERENCES MODEL(model_id) ON DELETE CASCADE
+    FOREIGN KEY (model_id) REFERENCES `MODEL`(model_id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Insert default model info on creation
-INSERT INTO MODEL (model_id, model_name, algorithm, training_accuracy, testing_accuracy, file_path)
+-- NOTE: Fixed HTML entity '&' -> literal '&' in file_path value
+INSERT INTO `MODEL` (model_id, model_name, algorithm, training_accuracy, testing_accuracy, file_path)
 VALUES (1, 'XGBoost', 'XGBClassifier', 1.0000, 0.8494, 'scale1.pkl & rdf.pkl')
 ON DUPLICATE KEY UPDATE 
-    model_name = VALUES(model_name),
-    algorithm = VALUES(algorithm),
-    training_accuracy = VALUES(training_accuracy),
-    testing_accuracy = VALUES(testing_accuracy);
+    model_name          = VALUES(model_name),
+    algorithm           = VALUES(algorithm),
+    training_accuracy   = VALUES(training_accuracy),
+    testing_accuracy    = VALUES(testing_accuracy),
+    file_path           = VALUES(file_path);

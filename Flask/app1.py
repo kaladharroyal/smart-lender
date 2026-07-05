@@ -3,7 +3,7 @@ import mysql.connector
 import pickle
 import numpy as np
 import pandas as pd
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
@@ -23,125 +23,135 @@ if os.path.exists(MODEL_PATH):
     with open(MODEL_PATH, 'rb') as f:
         model = pickle.load(f)
 
+# Load database configuration from environment variables with local defaults
+DB_HOST = os.environ.get("DB_HOST", "127.0.0.1")
+DB_PORT = int(os.environ.get("DB_PORT", 3306))
+DB_USER = os.environ.get("DB_USER", "root")
+DB_PASSWORD = os.environ.get("DB_PASSWORD", "Kaladhar*011")
+DB_NAME = os.environ.get("DB_NAME", "smart_lender")
+
 # Helper function to get database connection
 def get_db_connection():
     return mysql.connector.connect(
-        host="127.0.0.1",
-        port=3306,
-        user="root",
-        password="Kaladhar*011",
-        database="smart_lender"
+        host=DB_HOST,
+        port=DB_PORT,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        database=DB_NAME
     )
 
 # Initialize database matching smart_lender_erd.png
 def init_db():
     # Connect to MySQL server first without selecting a database
     conn = mysql.connector.connect(
-        host="127.0.0.1",
-        port=3306,
-        user="root",
-        password="Kaladhar*011"
+        host=DB_HOST,
+        port=DB_PORT,
+        user=DB_USER,
+        password=DB_PASSWORD
     )
+
     cursor = conn.cursor()
-    
-    # Create database if not exists
-    cursor.execute("CREATE DATABASE IF NOT EXISTS smart_lender")
-    cursor.execute("USE smart_lender")
-    
-    # 1. USER table
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS USER (
-            user_id INT AUTO_INCREMENT PRIMARY KEY,
-            name VARCHAR(255) NOT NULL,
-            email VARCHAR(255) NOT NULL,
-            role VARCHAR(100) NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
-    ''')
-    
-    # 2. APPLICANT_PROFILE table
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS APPLICANT_PROFILE (
-            applicant_id INT AUTO_INCREMENT PRIMARY KEY,
-            gender VARCHAR(50) NOT NULL,
-            married VARCHAR(50) NOT NULL,
-            education VARCHAR(100) NOT NULL,
-            self_employed VARCHAR(50) NOT NULL,
-            dependents INT NOT NULL,
-            property_area VARCHAR(100) NOT NULL
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
-    ''')
-    
-    # 3. CREDIT_HISTORY table
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS CREDIT_HISTORY (
-            credit_id INT AUTO_INCREMENT PRIMARY KEY,
-            applicant_id INT NOT NULL,
-            credit_score DOUBLE NOT NULL,
-            credit_history_status INT NOT NULL,
-            FOREIGN KEY (applicant_id) REFERENCES APPLICANT_PROFILE(applicant_id) ON DELETE CASCADE
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
-    ''')
-    
-    # 4. LOAN_APPLICATION table
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS LOAN_APPLICATION (
-            loan_id INT AUTO_INCREMENT PRIMARY KEY,
-            applicant_id INT NOT NULL,
-            income DOUBLE NOT NULL,
-            coapplicant_income DOUBLE NOT NULL,
-            loan_amount DOUBLE NOT NULL,
-            loan_term INT NOT NULL,
-            application_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (applicant_id) REFERENCES APPLICANT_PROFILE(applicant_id) ON DELETE CASCADE
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
-    ''')
-    
-    # 5. MODEL table
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS MODEL (
-            model_id INT AUTO_INCREMENT PRIMARY KEY,
-            model_name VARCHAR(100) NOT NULL,
-            algorithm VARCHAR(100) NOT NULL,
-            training_accuracy DOUBLE NOT NULL,
-            testing_accuracy DOUBLE NOT NULL,
-            file_path VARCHAR(255) NOT NULL
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
-    ''')
-    
-    # 6. PREDICTION_RESULT table
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS PREDICTION_RESULT (
-            prediction_id INT AUTO_INCREMENT PRIMARY KEY,
-            loan_id INT NOT NULL,
-            model_id INT NOT NULL,
-            prediction_status VARCHAR(50) NOT NULL,
-            probability_score DOUBLE NOT NULL,
-            prediction_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (loan_id) REFERENCES LOAN_APPLICATION(loan_id) ON DELETE CASCADE,
-            FOREIGN KEY (model_id) REFERENCES MODEL(model_id) ON DELETE CASCADE
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
-    ''')
-    
-    # Insert default model if not exists or update it to match XGBoost
-    cursor.execute("SELECT COUNT(*) FROM MODEL WHERE model_id = 1")
-    row = cursor.fetchone()
-    if row:
-        count = row.get('COUNT(*)') if isinstance(row, dict) else row[0]
-        if count == 0:
-            cursor.execute('''
-                INSERT INTO MODEL (model_id, model_name, algorithm, training_accuracy, testing_accuracy, file_path)
-                VALUES (1, 'XGBoost', 'XGBClassifier', 1.0000, 0.8494, 'scale1.pkl & rdf.pkl')
-            ''')
-        else:
-            cursor.execute('''
-                UPDATE MODEL 
-                SET model_name = 'XGBoost', algorithm = 'XGBClassifier', training_accuracy = 1.0000, testing_accuracy = 0.8494
-                WHERE model_id = 1
-            ''')
-        
-    conn.commit()
-    conn.close()
+    try:
+        # Create database if not exists
+        cursor.execute(f"CREATE DATABASE IF NOT EXISTS {DB_NAME}")
+        cursor.execute(f"USE {DB_NAME}")
+
+        # 1. USER table
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS USER (
+                user_id INT AUTO_INCREMENT PRIMARY KEY,
+                name VARCHAR(255) NOT NULL,
+                email VARCHAR(255) NOT NULL,
+                role VARCHAR(100) NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+        ''')
+
+        # 2. APPLICANT_PROFILE table
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS APPLICANT_PROFILE (
+                applicant_id INT AUTO_INCREMENT PRIMARY KEY,
+                gender VARCHAR(50) NOT NULL,
+                married VARCHAR(50) NOT NULL,
+                education VARCHAR(100) NOT NULL,
+                self_employed VARCHAR(50) NOT NULL,
+                dependents INT NOT NULL,
+                property_area VARCHAR(100) NOT NULL
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+        ''')
+
+        # 3. CREDIT_HISTORY table
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS CREDIT_HISTORY (
+                credit_id INT AUTO_INCREMENT PRIMARY KEY,
+                applicant_id INT NOT NULL,
+                credit_score DOUBLE NOT NULL,
+                credit_history_status INT NOT NULL,
+                FOREIGN KEY (applicant_id) REFERENCES APPLICANT_PROFILE(applicant_id) ON DELETE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+        ''')
+
+        # 4. LOAN_APPLICATION table
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS LOAN_APPLICATION (
+                loan_id INT AUTO_INCREMENT PRIMARY KEY,
+                applicant_id INT NOT NULL,
+                income DOUBLE NOT NULL,
+                coapplicant_income DOUBLE NOT NULL,
+                loan_amount DOUBLE NOT NULL,
+                loan_term INT NOT NULL,
+                application_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (applicant_id) REFERENCES APPLICANT_PROFILE(applicant_id) ON DELETE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+        ''')
+
+        # 5. MODEL table
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS MODEL (
+                model_id INT AUTO_INCREMENT PRIMARY KEY,
+                model_name VARCHAR(100) NOT NULL,
+                algorithm VARCHAR(100) NOT NULL,
+                training_accuracy DOUBLE NOT NULL,
+                testing_accuracy DOUBLE NOT NULL,
+                file_path VARCHAR(255) NOT NULL
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+        ''')
+
+        # 6. PREDICTION_RESULT table
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS PREDICTION_RESULT (
+                prediction_id INT AUTO_INCREMENT PRIMARY KEY,
+                loan_id INT NOT NULL,
+                model_id INT NOT NULL,
+                prediction_status VARCHAR(50) NOT NULL,
+                probability_score DOUBLE NOT NULL,
+                prediction_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (loan_id) REFERENCES LOAN_APPLICATION(loan_id) ON DELETE CASCADE,
+                FOREIGN KEY (model_id) REFERENCES MODEL(model_id) ON DELETE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+        ''')
+
+        # Insert default model if not exists or update it to match XGBoost
+        cursor.execute("SELECT COUNT(*) FROM MODEL WHERE model_id = 1")
+        row = cursor.fetchone()
+        if row:
+            count = row.get('COUNT(*)') if isinstance(row, dict) else row[0]
+            if count == 0:
+                cursor.execute('''
+                    INSERT INTO MODEL (model_id, model_name, algorithm, training_accuracy, testing_accuracy, file_path)
+                    VALUES (1, 'XGBoost', 'XGBClassifier', 1.0000, 0.8494, 'scale1.pkl & rdf.pkl')
+                ''')
+            else:
+                cursor.execute('''
+                    UPDATE MODEL 
+                    SET model_name = 'XGBoost', algorithm = 'XGBClassifier', training_accuracy = 1.0000, testing_accuracy = 0.8494
+                    WHERE model_id = 1
+                ''')
+
+        conn.commit()
+    finally:
+        cursor.close()
+        conn.close()
 
 try:
     init_db()
@@ -153,7 +163,7 @@ def index():
     try:
         # Load past predictions by joining normalized tables
         conn = get_db_connection()
-        cursor = conn.cursor()
+        cursor = conn.cursor(dictionary=True)
         cursor.execute('''
             SELECT 
                 l.loan_id, 
@@ -178,11 +188,12 @@ def index():
             ORDER BY l.loan_id DESC
         ''')
         history = cursor.fetchall()
+        cursor.close()
         conn.close()
     except Exception as e:
         print(f"Error reading history from MySQL: {e}")
         history = []
-        
+
     return render_template('index.html', history=history)
 
 @app.route('/submit')
@@ -291,6 +302,7 @@ def predict():
         ''', (loan_id, status, float(probability)))
         
         conn.commit()
+        cursor.close()
         conn.close()
 
         # Render result page
@@ -314,4 +326,7 @@ def predict():
         return f"Error during prediction: {e}", 500
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    port = int(os.environ.get("PORT", 5000))
+    # Enable debug mode only if running locally outside standard production configurations
+    debug_mode = os.environ.get("FLASK_ENV") == "development" or os.environ.get("DEBUG", "False").lower() in ("true", "1")
+    app.run(debug=debug_mode, host='0.0.0.0', port=port)
