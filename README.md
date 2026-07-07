@@ -35,7 +35,7 @@ The project is structured to separate concern between model training, explorator
 └────────────────────────┘      └────────────────────────┘      └────────────────────────┘
 ```
 
-The system architecture and process flows are documented in the root image: [smart_lender architecture.png](file:///c:/Users/dvndr/Downloads/skill%20wallet%20project%20docs/smart_lender%20architecture.png).
+The system architecture and process flows are documented in the project documentation folder: [smart_lender architecture.png](file:///c:/Users/dvndr/Downloads/skill%20wallet%20project%20docs/7.Project%20Documentation/smart_lender%20architecture.png).
 
 ---
 
@@ -44,17 +44,17 @@ The system architecture and process flows are documented in the root image: [sma
 The predictive intelligence of **Smart Lender** is built upon a structured ML pipeline, starting from raw data analysis to model deployment.
 
 ### 1. Dataset Overview
-The model uses the [loan_prediction.csv](file:///c:/Users/dvndr/Downloads/skill%20wallet%20project%20docs/Dataset/loan_prediction.csv) dataset located in the [Dataset](file:///c:/Users/dvndr/Downloads/skill%20wallet%20project%20docs/Dataset) directory, containing **614 records** with the following features:
+The model uses the [loan_prediction.csv](file:///c:/Users/dvndr/Downloads/skill%20wallet%20project%20docs/7.Project%20Documentation/Dataset/loan_prediction.csv) dataset located in the [Dataset](file:///c:/Users/dvndr/Downloads/skill%20wallet%20project%20docs/7.Project%20Documentation/Dataset) directory, containing **614 records** with the following features:
 
 *   **Demographics:** `Gender`, `Married`, `Dependents`, `Education`, `Self_Employed`
 *   **Financials:** `ApplicantIncome` (Applicant's Income), `CoapplicantIncome` (Co-applicant's Income), `LoanAmount` (Loan amount in thousands), `Loan_Amount_Term` (Term of loan in days)
 *   **Credit & Location:** `Credit_History` (1.0 = Good, 0.0 = Bad), `Property_Area` (Urban, Semiurban, Rural)
 *   **Target Class:** `Loan_Status` (Y = Approved, N = Rejected)
 
-Exploratory Data Analysis (EDA) is performed in [visualization.ipynb](file:///c:/Users/dvndr/Downloads/skill%20wallet%20project%20docs/visualization_analisys/visualization.ipynb) containing correlation heatmaps, boxplots for outlier discovery, and histograms of income and credit profiles.
+Exploratory Data Analysis (EDA) is performed in [visualization.ipynb](file:///c:/Users/dvndr/Downloads/skill%20wallet%20project%20docs/7.Project%20Documentation/visualization_analisys/visualization.ipynb) containing correlation heatmaps, boxplots for outlier discovery, and histograms of income and credit profiles.
 
 ### 2. Preprocessing & Data Wrangling
-Steps taken during preprocessing inside [preprocessing.ipynb](file:///c:/Users/dvndr/Downloads/skill%20wallet%20project%20docs/data_preprocessing/preprocessing.ipynb):
+Steps taken during preprocessing inside [preprocessing.ipynb](file:///c:/Users/dvndr/Downloads/skill%20wallet%20project%20docs/7.Project%20Documentation/data_preprocessing/preprocessing.ipynb):
 *   **Categorical Encoding:** Features are mapped to numerical scales (e.g., `Graduate`: 1, `Not Graduate`: 0; `Urban`: 2, `Semiurban`: 1, `Rural`: 0).
 *   **Imputation of Missing Values:** Missing values are imputed using the mode value for each feature.
 *   **Outlier Treatment:** Outliers in `ApplicantIncome`, `CoapplicantIncome`, and `LoanAmount` are handled using the Interquartile Range (IQR) method.
@@ -73,13 +73,13 @@ Various algorithms were trained and evaluated using a $67\%$-$33\%$ Train-Test s
 | **XGBoost (XGBClassifier)** | **84.94%** | **85.34%** | **Optimal model selected due to high test accuracy and low variance.** |
 
 > [!NOTE]
-> The final model saved in [Flask/rdf.pkl](file:///c:/Users/dvndr/Downloads/skill%20wallet%20project%20docs/Flask/rdf.pkl) contains the trained `XGBClassifier` (saving under the filename `rdf.pkl` for backward compatibility with the legacy application shell). The corresponding scaler is saved as [Flask/scale1.pkl](file:///c:/Users/dvndr/Downloads/skill%20wallet%20project%20docs/Flask/scale1.pkl).
+> The final model saved in [Flask/rdf.pkl](file:///c:/Users/dvndr/Downloads/skill%20wallet%20project%20docs/7.Project%20Documentation/Flask/rdf.pkl) contains the trained `XGBClassifier` (saving under the filename `rdf.pkl` for backward compatibility with the legacy application shell). The corresponding scaler is saved as [Flask/scale1.pkl](file:///c:/Users/dvndr/Downloads/skill%20wallet%20project%20docs/7.Project%20Documentation/Flask/scale1.pkl).
 
 ---
 
 ## 🗄️ Database Design & ERD
 
-Smart Lender implements a relational MySQL database structure matching the Entity-Relationship Diagram layout in [smart_lender_erd.png](file:///c:/Users/dvndr/Downloads/skill%20wallet%20project%20docs/entity%20relationship%20diagram/smart_lender_erd.png). The SQL script is stored in [Flask/schema.sql](file:///c:/Users/dvndr/Downloads/skill%20wallet%20project%20docs/Flask/schema.sql).
+Smart Lender implements a relational MySQL database structure matching the Entity-Relationship Diagram layout in [smart_lender_erd.png](file:///c:/Users/dvndr/Downloads/skill%20wallet%20project%20docs/7.Project%20Documentation/entity%20relationship%20diagram/smart_lender_erd.png). The SQL script is stored in [Flask/schema.sql](file:///c:/Users/dvndr/Downloads/skill%20wallet%20project%20docs/7.Project%20Documentation/Flask/schema.sql).
 
 ### Relational Schema (Mermaid Visualization)
 ```mermaid
@@ -142,7 +142,7 @@ erDiagram
 
 ## 💻 Web Application Flow
 
-The Flask application is implemented inside [Flask/app1.py](file:///c:/Users/dvndr/Downloads/skill%20wallet%20project%20docs/Flask/app1.py). It manages the following routes and features:
+The Flask application is implemented inside [Flask/app1.py](file:///c:/Users/dvndr/Downloads/skill%20wallet%20project%20docs/7.Project%20Documentation/Flask/app1.py). It manages the following routes and features:
 
 1.  **Dashboard & History (`/`):** Reads records from the database using structured `JOIN` queries across the applicant, loan, credit, and prediction tables. Shows the probability scores and statuses in a neat interactive layout.
 2.  **Submit Form (`/submit`):** Collects data like demographics, income details, loan request, and credit record.
@@ -163,7 +163,12 @@ Follow these steps to run the Smart Lender application on your local machine:
 *   **MySQL Server (v8.0 or newer)**
 
 ### Step 1: Virtual Environment & Packages
-First, set up a virtual environment and install the required libraries:
+First, navigate to the project folder where the project files reside:
+```powershell
+cd "7.Project Documentation"
+```
+
+Then, set up a virtual environment and install the required libraries:
 ```powershell
 # Create virtual environment
 python -m venv .venv
@@ -187,7 +192,7 @@ pip install -r requirements.txt
     *Alternatively, the Flask script will automatically create the database structure on startup if it has valid admin credentials.*
 
 ### Step 3: Environment Setup
-Create a `.env` file in the root directory (using [.env.example](file:///c:/Users/dvndr/Downloads/skill%20wallet%20project%20docs/.env.example) as reference) and define your connection details:
+Create a `.env` file in the project folder (using [.env.example](file:///c:/Users/dvndr/Downloads/skill%20wallet%20project%20docs/7.Project%20Documentation/.env.example) as reference) and define your connection details:
 ```ini
 DB_HOST=127.0.0.1
 DB_PORT=3306
@@ -209,29 +214,56 @@ The application will run locally and become available at `http://127.0.0.1:5000/
 
 ```
 ├── 1. Brainstorming & Ideation/          # Customer problem exploration & analysis
-├── 2. Requirement Analysis/              # User persona and journey maps
-├── Dataset/
-│   ├── loan_prediction.csv              # Raw CSV data containing 614 rows
-│   └── loan_prediction.xlsx             # Spreadsheet data file
-├── Flask/
-│   ├── templates/
-│   │   ├── index.html                   # Dashboard showing history and past requests
-│   │   ├── submit.html                  # Input form for applicant registration
-│   │   └── predict.html                 # Inference result display
-│   ├── app1.py                          # Flask backend orchestration & routing script
-│   ├── scale1.pkl                       # Pickled StandardScaler binary
-│   ├── rdf.pkl                          # Pickled XGBoost model binary
-│   └── schema.sql                       # Database design DDL commands
-├── data_preprocessing/
-│   └── preprocessing.ipynb              # Model building, pipeline creation, and serialization
-├── entity relationship diagram/
-│   └── smart_lender_erd.png             # Database ER Diagram
-├── visualization_analisys/
-│   └── visualization.ipynb              # Exploratory Data Analysis & Plots
-├── requirements.txt                     # Project dependencies list
-├── .env.example                         # Environment configuration template
-├── locustfile.py                        # Locust load and performance testing script
-└── README.md                            # Main project documentation (this file)
+│   ├── Brainstorming & Idea Prioritization.pdf
+│   ├── Define Problem Statements .pdf
+│   └── Empathy Map.pdf
+├── 2.Requirement Analysis/              # User persona and journey maps
+│   ├── Customer Journey Map.pdf
+│   ├── Data Flow Diagram.pdf
+│   ├── Solution Requirements.pdf
+│   └── Technology Stack.pdf
+├── 3. Project Design Phase/
+│   ├── Problem-Solution Fit.pdf
+│   ├── Proposed Solution (1).pdf
+│   └── Solution Architecture.pdf
+├── 4. Project Planning Phase/
+│   └── Project Planning (1).pdf
+├── 5. Project Development Phase/
+│   └── Coding & Solution.pdf
+├── 6.Project Testing/
+│   └── Performance Testing.pdf
+├── 7.Project Documentation/
+│   ├── Dataset/
+│   │   ├── loan_prediction.csv        # Raw CSV data containing 614 rows
+│   │   └── loan_prediction.xlsx       # Spreadsheet data file
+│   ├── Flask/
+│   │   ├── templates/
+│   │   │   ├── index.html             # Dashboard showing history and past requests
+│   │   │   ├── submit.html            # Input form for applicant registration
+│   │   │   └── predict.html           # Inference result display
+│   │   ├── app1.py                    # Flask backend orchestration & routing script
+│   │   ├── scale1.pkl                 # Pickled StandardScaler binary
+│   │   ├── rdf.pkl                    # Pickled XGBoost model binary
+│   │   └── schema.sql                 # Database design DDL commands
+│   ├── data_preprocessing/
+│   │   └── preprocessing.ipynb        # Model building, pipeline creation, and serialization
+│   ├── entity relationship diagram/
+│   │   └── smart_lender_erd.png       # Database ER Diagram
+│   ├── visualization_analisys/
+│   │   └── visualization.ipynb        # Exploratory Data Analysis & Plots
+│   ├── locustfile.py                  # Locust load and performance testing script
+│   ├── requirements.txt               # Project dependencies list
+│   ├── .env.example                   # Environment configuration template
+│   ├── smart_lender architecture.png  # System architecture flow diagram
+│   ├── Project Executable Files.pdf
+│   └── Sample Project Documentation.pdf
+├── 8.Project Demonstration/
+│   ├── Communication.pdf
+│   ├── Demonstration of Proposed Features.pdf
+│   ├── Project Demo Planning.pdf
+│   ├── Scalability & Future Plan.pdf
+│   └── Team Involvement in Demonstration.pdf
+└── README.md                                  # Main project documentation (this file)
 ```
 
 ---
@@ -253,7 +285,7 @@ Smart Lender includes a performance testing configuration using **Locust** to me
    ```powershell
    pip install locust
    ```
-2. Start the performance test suite using the [locustfile.py](file:///c:/Users/dvndr/Downloads/skill%20wallet%20project%20docs/locustfile.py) script:
+2. Start the performance test suite using the [locustfile.py](file:///c:/Users/dvndr/Downloads/skill%20wallet%20project%20docs/7.Project%20Documentation/locustfile.py) script:
    ```powershell
    locust -f locustfile.py
    ```
