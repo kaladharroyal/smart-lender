@@ -224,10 +224,10 @@ The application will run locally and become available at `http://127.0.0.1:5000/
 │   └── Technology Stack.pdf
 ├── 3. Project Design Phase/
 │   ├── Problem-Solution Fit.pdf
-│   ├── Proposed Solution (1).pdf
+│   ├── Proposed Solution.pdf
 │   └── Solution Architecture.pdf
 ├── 4. Project Planning Phase/
-│   └── Project Planning (1).pdf
+│   └── Project Planning.pdf
 ├── 5. Project Development Phase/
 │   └── Coding & Solution.pdf
 ├── 6.Project Testing/
@@ -262,6 +262,7 @@ The application will run locally and become available at `http://127.0.0.1:5000/
 │   ├── Demonstration of Proposed Features.pdf
 │   ├── Project Demo Planning.pdf
 │   ├── Scalability & Future Plan.pdf
+│   ├── Smart_Lender-Project_Demo.mp4
 │   └── Team Involvement in Demonstration.pdf
 └── README.md                                  # Main project documentation (this file)
 ```
